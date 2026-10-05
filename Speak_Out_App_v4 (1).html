@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Speak Out Project Script – AI vs. Humans</title>
+<style>
+:root{--bg:#eaf3ff;--card:#fff;--fg:#1c2330;--mut:#6a7485;--line:#c4dcf7;--acc:#1d6fe0;--rd:#0e7490;--th:#1d4ed8;--chip:#dbeafe;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1a30;--card:#12294a;--fg:#e8ecf2;--mut:#98a2b3;--line:#24467a;--rd:#67e8f9;--th:#93c5fd;--chip:#1c3a6b}}
+:root[data-theme="dark"]{--bg:#0b1a30;--card:#12294a;--fg:#e8ecf2;--mut:#98a2b3;--line:#24467a;--rd:#67e8f9;--th:#93c5fd;--chip:#1c3a6b}
+html{scroll-padding-top:150px}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",Sarabun,sans-serif;line-height:1.6}
+header{background:#0b2a5b;color:#fff;padding:10px 12px 8px;position:sticky;top:env(safe-area-inset-top,0px);z-index:9}
+header h1{margin:0;font-size:18px}header p{margin:0 0 6px;color:#aab4c5;font-size:12px}
+.tabs{display:flex;gap:4px;background:#123a7a;border-radius:12px;padding:3px}
+.tabs button{flex:1;border:0;background:none;color:#c6cfdd;font:inherit;font-size:13px;padding:7px 2px;border-radius:9px}
+.tabs button.on{background:var(--acc);color:#fff;font-weight:700}
+.me{background:var(--card);border-bottom:1px solid var(--line);padding:8px 10px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 92px);z-index:8}
+.me .lb{font-size:12px;color:var(--mut);margin-bottom:4px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.chip{flex:none;border:2px solid var(--c,#999);color:var(--c,var(--fg));background:none;border-radius:20px;padding:4px 11px;font:inherit;font-size:13px;font-weight:600;white-space:nowrap}
+.chip.on{background:var(--c,#555);color:#fff}
+main{max-width:760px;margin:0 auto;padding:10px 12px 60px}
+.pane{display:none}.pane.on{display:block}
+h2{font-size:15px;margin:22px 0 8px;display:flex;align-items:center;gap:8px;color:var(--fg)}
+h2:before{content:"";width:5px;height:20px;border-radius:3px;background:var(--acc)}
+.line{--c:#888;display:flex;gap:10px;margin:10px 0;align-items:flex-start;transition:opacity .2s}
+.av{flex:none;width:44px;text-align:center}
+.av i{display:flex;width:44px;height:44px;border-radius:50%;background:var(--c);align-items:center;justify-content:center;font-style:normal;font-size:22px}
+.av span{display:block;font-size:10px;color:var(--c);font-weight:700;line-height:1.2;margin-top:2px}
+.bub{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--c);border-radius:6px 16px 16px 16px;padding:8px 12px}
+.hd{display:flex;gap:8px;align-items:center;font-size:12px;margin-bottom:2px}
+.nm{font-weight:800;color:var(--c);font-size:14px}.no{margin-left:auto;color:var(--mut)}
+.you{display:none;background:var(--c);color:#fff;border-radius:10px;padding:0 8px;font-weight:700}
+.tx{font-size:19px;line-height:1.55}.en{font-size:16px}
+.rd{color:var(--rd);font-size:15px;margin-top:4px}.th{color:var(--th);font-size:15px;margin-top:3px}
+.spk{flex:none;width:44px;height:44px;border:0;border-radius:12px;background:var(--chip);font-size:20px;color:var(--fg)}
+.spk.on{background:#1d4ed8;color:#fff}
+body[data-me] .line:not(.mine){opacity:.45}
+body[data-me] .line.mine .bub{box-shadow:0 0 0 2px var(--c);background:color-mix(in srgb,var(--c) 10%,var(--card))}
+body[data-me] .line.mine .you{display:inline-block}
+.line.now .bub{box-shadow:0 0 0 3px #38bdf8}.line.now{opacity:1!important}
+.w{cursor:pointer;border-radius:4px}.w.hit{background:#bfe3ff;color:#000}
+.timer{background:#0b2a5b;color:#fff;border-radius:14px;padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.timer .t{font-size:24px;font-weight:700;color:#7dd3fc;font-variant-numeric:tabular-nums}
+.timer button,.ctl button{border:0;border-radius:8px;padding:7px 12px;font:inherit;font-weight:700}
+.timer button{background:#38bdf8;color:#111}
+.ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0;font-size:13px}
+.ctl button{background:var(--acc);color:#fff}.ctl select{font:inherit;padding:6px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+.msg{font-size:13px;color:var(--mut);margin:4px 0}
+.paper{background:#fff;color:#111;border-radius:10px;padding:16px 14px;box-shadow:0 1px 6px #0002}
+.paper h1{text-align:center;color:#1f4e79;font-size:21px;margin:0}.paper .s{text-align:center;color:#555;margin-bottom:8px;font-size:14px}
+.paper h3{color:#1f4e79;border-bottom:2px solid #1f4e79;margin:16px 0 6px;font-size:16px}.paper p{margin:7px 0;font-size:16px}
+.paper p b{color:var(--c)}
+.key{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}.key td{border:1px solid #999;padding:3px 7px}
+.u1{background:#fff176}.u2{background:#a5d6a7}.u3{background:#81d4fa}.u4{background:#f8bbd0}
+mark{color:#000;font-weight:700;padding:0 2px;border-radius:2px}mark.g{text-decoration:underline}
+.pbtn{background:var(--acc);color:#fff;border:0;border-radius:10px;padding:8px 14px;font:inherit;font-weight:700;margin-bottom:10px}
+@media print{header,.me,.pbtn,.pane:not(#p1){display:none!important}body{background:#fff}.paper{box-shadow:none;padding:0}#p1{display:block!important}body[data-me] .line{opacity:1}}
+</style></head><body>
+<header><h1>Speak Out Project Script</h1><p>Career: Weather Forecaster | Section _ (AI vs. Humans)</p>
+<div class="tabs"><button class="on" data-p="p1">1. สคริปต์</button><button data-p="p2">2. แปลไทย</button><button data-p="p3">3. ซ้อมพูด</button></div></header>
+<div class="me" id="meBar"><div class="lb">🎯 เลือกบทของคุณ (บทของคุณจะเด่น ส่วนคนอื่นจางลง)</div><div class="chips" id="chips"></div></div>
+<main>
+<section class="pane on" id="p1"><button class="pbtn" onclick="window.print()">🖨 พิมพ์ / Save PDF</button>
+<div class="paper"><h1>AI vs. Humans in the Workplace</h1><div class="s">Group Project – Presentation Script · Weather Forecaster (Meteorologist)</div>
+<table class="key"><tr><td><mark class="u1">Unit 1</mark></td><td><mark class="u2">Unit 2</mark></td><td><mark class="u3">Unit 3</mark></td><td><mark class="u4">Unit 4</mark></td></tr><tr><td colspan="4">Vocabulary = ตัวหนา · Grammar = ตัวหนา + ขีดเส้นใต้</td></tr></table>
+<div id="a4"></div></div></section>
+<section class="pane" id="p2"><div id="tr"></div></section>
+<section class="pane" id="p3">
+<div class="timer"><span>⏱ ซ้อม 7 นาที:</span><span class="t" id="tm">07:00</span><button id="tb">เริ่มจับเวลา</button></div>
+<div class="ctl"><button id="pa">▶ เล่นต่อเนื่อง</button><label>ความเร็ว <select id="rate"><option value="0.6">ช้ามาก</option><option value="0.8" selected>ช้า</option><option value="1">ปกติ</option></select></label><label><input type="checkbox" id="sth" checked> คำแปล</label></div>
+<div class="msg" id="msg">แตะ 🔊 ฟังทีละเทิร์น · แตะคำเพื่อฟังทีละคำ · เลือกบทของคุณแล้วกด "เล่นต่อเนื่อง" ระบบจะอ่านบทเพื่อนและเว้นเวลาให้คุณพูดในบทของคุณ</div>
+<div id="tts"></div></section>
+</main>
+<script>
+const DATA=[{"title": "Introduction", "turns": [{"who": "Narrator 1", "en": "Good morning, teacher and classmates. We are Group ___. Today our topic is \"AI vs. Humans in the Workplace.\"", "rd": "กุด มอร์นิ่ง, ที้ชเชอร์ แอนด์ คลาสเมทส์. วี อาร์ กรุ๊ป ___. ทูเดย์ อาวเออร์ ท็อปพิก อีส \"เอ ไอ เวอร์ซัส ฮิวเมินส์ อิน เดอะ เวิร์คเพลส\"", "th": "สวัสดีตอนเช้า คุณครูและเพื่อน ๆ เราคือกลุ่มที่ ___ วันนี้หัวข้อของเราคือ \"AI กับมนุษย์ในที่ทำงาน\""}, {"who": "Narrator 2", "en": "The career we chose is Weather Forecaster, also called a Meteorologist. Let us introduce our group.", "rd": "เดอะ คะเรียร์ วี โชส อีส เว็ทเธอร์ ฟอร์แคสเตอร์, ออลโซ คอลด์ อะ มีเทียรอลอจิสต์. เล็ท อัส อินโทรดิวซ์ อาวเออร์ กรุ๊ป", "th": "อาชีพที่เราเลือกคือนักพยากรณ์อากาศ หรือเรียกอีกอย่างว่านักอุตุนิยมวิทยา ขอแนะนำสมาชิกในกลุ่มของเรา"}, {"who": "Everyone", "en": "Hello, I am ___. In our role-play, I play ___.", "rd": "เฮลโล, ไอ แอม ___. อิน อาวเออร์ โรลเพลย์, ไอ เพลย์ ___", "th": "สวัสดี ฉัน/ผมชื่อ ___ ในบทบาทสมมติของเรา ฉัน/ผมรับบทเป็น ___"}]}, {"title": "Point 1: AI Strengths", "turns": [{"who": "Narrator 1", "en": "AI is very good at working with data. In weather forecasting, it can read huge amounts of satellite and radar data in seconds. However, we still need humans to work comfortably together with it.", "rd": "เอ ไอ อีส เวรี กุด แอท เวิร์คกิ้ง วิธ เดทา. อิน เว็ทเธอร์ ฟอร์แคสติ้ง, อิท แคน รีด ฮิวจ์ อะเมาท์ส ออฟ แซทเทอะไลท์ แอนด์ เรดาร์ เดทา อิน เซคเคินส์. เฮาเอเวอร์, วี สติล นีด ฮิวเมินส์ ทู เวิร์ค คัมฟ์เทอเบลลี ทูเก๊ทเธอร์ วิธ อิท", "th": "AI เก่งมากในการทำงานกับข้อมูล ในการพยากรณ์อากาศ มันอ่านข้อมูลดาวเทียมและเรดาร์จำนวนมหาศาลได้ในไม่กี่วินาที อย่างไรก็ตาม เรายังต้องการให้มนุษย์ทำงานร่วมกับมันได้อย่างสบาย ๆ"}]}, {"title": "Point 2: Human Strengths", "turns": [{"who": "Narrator 2", "en": "For outdoor work, humans do better than AI. People send balloons up into the sky and test the wind in real places. So we should not put off learning new skills. Unless we use both humans and AI together, we cannot get the best results.", "rd": "ฟอร์ เอาท์ดอร์ เวิร์ค, ฮิวเมินส์ ดู เบ็ทเทอร์ แดน เอ ไอ. พีเพิล เซนด์ บัลลูนส์ อัพ อินทู เดอะ สกาย แอนด์ เทสต์ เดอะ วินด์ อิน เรียล เพลซิส. โซ วี ชูด น็อท พุท ออฟ เลิร์นนิ่ง นิว สกิลส์. อันเลส วี ยูส โบธ ฮิวเมินส์ แอนด์ เอ ไอ ทูเก๊ทเธอร์, วี แคนน็อท เก็ท เดอะ เบสท์ รีซัลท์ส", "th": "สำหรับงานภาคสนาม มนุษย์ทำได้ดีกว่า AI ผู้คนปล่อยบอลลูนขึ้นฟ้าและวัดลมในสถานที่จริง ดังนั้นเราไม่ควรเลื่อนการเรียนรู้ทักษะใหม่ ๆ ออกไป ถ้าเราไม่ใช้ทั้งมนุษย์และ AI ร่วมกัน เราจะไม่ได้ผลลัพธ์ที่ดีที่สุด"}]}, {"title": "Conclusion", "turns": [{"who": "Narrator 1", "en": "AI is fast, but humans have to check the results to keep everyone safe.", "rd": "เอ ไอ อีส ฟาสท์, บัท ฮิวเมินส์ แฮฟ ทู เช็ค เดอะ รีซัลท์ส ทู คีพ เอฟรีวัน เซฟ", "th": "AI เร็ว แต่มนุษย์ต้องตรวจสอบผลลัพธ์เพื่อให้ทุกคนปลอดภัย"}, {"who": "Narrator 2", "en": "AI will not replace humans — people using AI will replace those who throw out new tech.", "rd": "เอ ไอ วิล น็อท รีเพลส ฮิวเมินส์ — พีเพิล ยูสซิ่ง เอ ไอ วิล รีเพลส โธส ฮู โธรว์ เอาท์ นิว เท็ค", "th": "AI จะไม่มาแทนที่มนุษย์ แต่คนที่ใช้ AI จะมาแทนที่คนที่ปฏิเสธเทคโนโลยีใหม่"}]}, {"title": "Role-play: At the Weather Center", "turns": [{"who": "Narrator 1", "en": "At the Weather Center, a big storm is forming in the sea. Everyone is nervous.", "rd": "แอท เดอะ เว็ทเธอร์ เซ็นเทอร์, อะ บิก สตอร์ม อีส ฟอร์มมิ่ง อิน เดอะ ซี. เอฟรีวัน อีส เนอร์เวิส", "th": "ที่ศูนย์อุตุนิยมวิทยา พายุลูกใหญ่กำลังก่อตัวในทะเล ทุกคนกังวลกัน"}, {"who": "Uncle Somsak", "en": "Dr. Mekhin! I had already sent the balloon up before the heavy rain started! It sent us new weather data!", "rd": "ด็อกเตอร์ เมคิน! ไอ แฮด ออลเรดี เซนท์ เดอะ บัลลูน อัพ บีฟอร์ เดอะ เฮวี เรน สตาร์ทเท็ด! อิท เซนท์ อัส นิว เว็ทเธอร์ เดทา!", "th": "ดร.เมฆิน! ผมปล่อยบอลลูนขึ้นไปแล้วก่อนที่ฝนตกหนักจะเริ่ม! มันส่งข้อมูลอากาศใหม่มาให้เรา!"}, {"who": "Amy", "en": "Got the data! The AI finished in just 3 seconds. It says the storm will go away in 12 hours.", "rd": "ก็อท เดอะ เดทา! ดิ เอ ไอ ฟินิชท์ อิน จัสท์ ทรี เซคเคินส์. อิท เซซ เดอะ สตอร์ม วิล โก อะเวย์ อิน ทเวลฟ์ เอาเออร์ส", "th": "ได้ข้อมูลแล้ว! AI ประมวลผลเสร็จในแค่ 3 วินาที มันบอกว่าพายุจะผ่านไปใน 12 ชั่วโมง"}, {"who": "Governor Wichai", "en": "If the risk is low, should I stop the evacuation? Stopping work will hurt our local business and permanent jobs!", "rd": "อิฟ เดอะ ริสก์ อีส โล, ชูด ไอ สต็อป ดิ อีแวคิวเอชั่น? สต็อปปิ้ง เวิร์ค วิล เฮิร์ท อาวเออร์ โลคอล บิสเนส แอนด์ เพอร์มะเนินท์ จ็อบส์!", "th": "ถ้าความเสี่ยงต่ำ ผมควรหยุดการอพยพไหม? การหยุดงานจะทำร้ายธุรกิจท้องถิ่นและงานประจำของเรา!"}, {"who": "Dr. Mekhin", "en": "Wait, Governor! I asked Amy to check the data again. The AI looks at old data, but the sea is very hot today!", "rd": "เวท, กัฟเวอร์เนอร์! ไอ แอสท์ เอมี ทู เช็ค เดอะ เดทา อะเกน. ดิ เอ ไอ ลุคส์ แอท โอลด์ เดทา, บัท เดอะ ซี อีส เวรี ฮอท ทูเดย์!", "th": "เดี๋ยวก่อนท่านผู้ว่า! ฉันขอให้เอมี่ตรวจสอบข้อมูลอีกครั้ง AI ดูข้อมูลเก่า แต่วันนี้ทะเลร้อนมาก!"}, {"who": "Uncle Somsak", "en": "Doctor! The wind above us is blowing very hard! My tools are shaking!", "rd": "ด็อกเตอร์! เดอะ วินด์ อะบัฟ อัส อีส โบลอิ้ง เวรี ฮาร์ด! ไม ทูลส์ อาร์ เชคกิ้ง!", "th": "คุณหมอ! ลมเหนือหัวเราแรงมาก! เครื่องมือของผมสั่นไปหมด!"}, {"who": "Amy", "en": "Oh no! When I added the hot sea data, the map changed! I am going to warn the city because the storm is coming here tonight!", "rd": "โอ โน! เวน ไอ แอดเด็ด เดอะ ฮอท ซี เดทา, เดอะ แมพ เชนจ์ด! ไอ แอม โกอิ้ง ทู วอร์น เดอะ ซิตี้ บีคอส เดอะ สตอร์ม อีส คัมมิ่ง เฮียร์ ทูไนท์!", "th": "ไม่นะ! พอฉันใส่ข้อมูลทะเลร้อนเข้าไป แผนที่ก็เปลี่ยน! ฉันจะเตือนคนในเมือง เพราะคืนนี้พายุจะมาถึงที่นี่!"}, {"who": "Narrator 2", "en": "The AI was wrong because it did not know this new heat. But the team saved the day because they chose to work hard and listen to real field tests.", "rd": "ดิ เอ ไอ วอส รอง บีคอส อิท ดิด น็อท โน ดิส นิว ฮีท. บัท เดอะ ทีม เซฟด์ เดอะ เดย์ บีคอส เดย์ โชส ทู เวิร์ค ฮาร์ด แอนด์ ลิสเซิน ทู เรียล ฟีลด์ เทสต์ส", "th": "AI ผิดพลาดเพราะไม่รู้เรื่องความร้อนใหม่นี้ แต่ทีมช่วยไว้ได้เพราะเลือกที่จะทำงานหนักและฟังผลทดสอบภาคสนามจริง"}, {"who": "Dr. Mekhin", "en": "I have been watching the weather since this morning. AI is fast, but humans make final decisions.", "rd": "ไอ แฮฟ บีน วอทชิ่ง เดอะ เว็ทเธอร์ ซินซ์ ดิส มอร์นิ่ง. เอ ไอ อีส ฟาสท์, บัท ฮิวเมินส์ เมค ไฟนอล ดิซิชั่นส์", "th": "ฉันเฝ้าดูสภาพอากาศมาตั้งแต่เช้านี้ AI เร็ว แต่มนุษย์เป็นผู้ตัดสินใจขั้นสุดท้าย"}, {"who": "Governor Wichai", "en": "Thank you! Amy, send me the facts. Dr. Mekhin... I will call the safety team right now!", "rd": "แธงค์ ยู! เอมี, เซนด์ มี เดอะ แฟคท์ส. ด็อกเตอร์ เมคิน... ไอ วิล คอล เดอะ เซฟตี้ ทีม ไรท์ นาว!", "th": "ขอบคุณ! เอมี่ ส่งข้อเท็จจริงมาให้ผม ดร.เมฆิน... ผมจะโทรหาทีมความปลอดภัยเดี๋ยวนี้!"}, {"who": "Narrator 1", "en": "AI is a useful tool, but people must stay passionate about helping others...", "rd": "เอ ไอ อีส อะ ยูสฟูล ทูล, บัท พีเพิล มัสท์ สเตย์ แพชชันเนท อะเบาท์ เฮลปิ้ง อัธเธอร์ส", "th": "AI เป็นเครื่องมือที่มีประโยชน์ แต่ผู้คนต้องมีใจรักในการช่วยเหลือผู้อื่นอยู่เสมอ..."}, {"who": "Narrator 2", "en": "And learn to avoid distractions during bad times.", "rd": "แอนด์ เลิร์น ทู อะวอยด์ ดิสแทรคชั่นส์ ดูริ่ง แบด ไทมส์", "th": "และเรียนรู้ที่จะหลีกเลี่ยงสิ่งรบกวนในช่วงเวลาเลวร้าย"}]}];const $=s=>document.querySelector(s);
+const R={'Narrator 1':['#1d4ed8','🎙️'],'Narrator 2':['#0284c7','🎤'],'Everyone':['#4f46e5','👥'],'Dr. Mekhin':['#0369a1','🧑‍🔬'],'Amy':['#0891b2','👩‍💻'],'Uncle Somsak':['#2563eb','🎈'],'Governor Wichai':['#1e3a8a','🏛️']};
+const PITCH={'Narrator 1':1,'Narrator 2':1.1,'Everyone':1,'Dr. Mekhin':0.9,'Amy':1.25,'Uncle Somsak':0.7,'Governor Wichai':0.8};
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const VOC=[['comfortably',2,0],['put off',2,0],['permanent',3,0],['avoid distractions',3,0],['passionate',4,0],['throw out',1,0],['had already sent',1,1],['asked Amy to check',1,1],['have been watching',2,1],['since',2,1],['Unless',3,1],['have to',3,1],['am going to warn',4,1],['will call',4,1]];
+const hl=t=>{let s=esc(t);VOC.forEach(([p,u,g])=>{s=s.replace(new RegExp('\\b('+p+')\\b','g'),`<mark class="u${u}${g?' g':''}">$1</mark>`)});return s};
+const flat=[];let a4='',tr='',tts='',n=0;
+function line(t,mode){const [c,ic]=R[t.who]||['#888','💬'];
+return `<div class="line" data-who="${esc(t.who)}" data-n="${t.n}" style="--c:${c}"><div class="av"><i>${ic}</i><span>${esc(t.who)}</span></div><div class="bub"><div class="hd"><span class="nm">${esc(t.who)}</span><span class="you">🎯 ตาคุณพูด</span><span class="no">${t.n}/__N__</span></div>${mode==='tts'?`<div class="tx" data-n="${t.n}"></div>`:`<div class="en">${esc(t.en)}</div><div class="rd">คำอ่าน: ${esc(t.rd)}</div>`}<div class="th ${mode==='tts'?'hth':''}">${mode==='tts'?'':'แปล: '}${esc(t.th)}</div></div>${mode==='tts'?'<button class="spk">🔊</button>':''}</div>`}
+DATA.forEach(s=>{a4+=`<h3>${esc(s.title)}</h3>`;tr+=`<h2>${esc(s.title)}</h2>`;tts+=`<h2>${esc(s.title)}</h2>`;
+s.turns.forEach(t=>{t.n=++n;flat.push(t);const c=(R[t.who]||['#222'])[0];a4+=`<p style="--c:${c}"><b>${esc(t.who)}:</b> ${hl(t.en)}</p>`;tr+=line(t,'tr');tts+=line(t,'tts')})});
+const N=flat.length;
+$('#a4').innerHTML=a4;$('#tr').innerHTML=tr.replaceAll('__N__',N);$('#tts').innerHTML=tts.replaceAll('__N__',N);
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button,.pane').forEach(x=>x.classList.remove('on'));b.classList.add('on');$('#'+b.dataset.p).classList.add('on');stopAll();window.scrollTo(0,0)});
+let me=null;
+const chips=$('#chips');
+['ทั้งหมด',...Object.keys(R)].forEach((k,i)=>{const b=document.createElement('button');b.className='chip'+(i?'':' on');b.textContent=i?R[k][1]+' '+k:k;if(i)b.style.setProperty('--c',R[k][0]);else b.style.setProperty('--c','#1d6fe0');
+b.onclick=()=>{me=i?k:null;chips.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));b.classList.add('on');if(me)document.body.dataset.me=me;else delete document.body.dataset.me;
+document.querySelectorAll('.line').forEach(l=>l.classList.toggle('mine',l.dataset.who===me||(me&&l.dataset.who==='Everyone')))};chips.appendChild(b)});
+document.querySelectorAll('#tts .tx').forEach(el=>{const t=flat[el.dataset.n-1];t.en.split(/(\s+)/).forEach(k=>{if(!k.trim()){el.append(k);return}const s=document.createElement('span');s.className='w';s.textContent=k;const w=k.replace(/[^A-Za-z0-9'-]/g,'');if(w&&!/_/.test(k))s.onclick=()=>{s.classList.add('hit');setTimeout(()=>s.classList.remove('hit'),600);stopAll();speak(w,1)};el.append(s)})});
+$('#sth').onchange=e=>document.querySelectorAll('.hth').forEach(x=>x.style.display=e.target.checked?'':'none');
+const synth=window.speechSynthesis;let voice=null,token=0,curBtn=null;
+function pv(){if(!synth)return;const v=synth.getVoices().filter(x=>/^en/i.test(x.lang));voice=v.find(x=>/en-US/i.test(x.lang))||v[0]||null;if(!voice)$('#msg').textContent='ยังไม่พบเสียงอังกฤษในเครื่อง — ลองเปิดใน Chrome/Safari หรือติดตั้ง English (US)'}
+if(!synth)$('#msg').textContent='เบราว์เซอร์นี้ไม่รองรับการอ่านออกเสียง';else{pv();synth.onvoiceschanged=pv}
+const clean=t=>t.replace(/_{2,}/g,' blank ').replace(/\bAI\b/g,'A I').replace(/\bDr\./g,'Doctor').replace(/—/g,',');
+function speak(text,pitch){return new Promise(res=>{if(!synth)return res();const u=new SpeechSynthesisUtterance(clean(text));u.lang='en-US';if(voice)u.voice=voice;u.rate=parseFloat($('#rate').value);u.pitch=pitch;u.onend=u.onerror=()=>res();synth.speak(u)})}
+function stopAll(){token++;if(synth)synth.cancel();document.querySelectorAll('.line.now').forEach(l=>l.classList.remove('now'));if(curBtn){curBtn.classList.remove('on');curBtn.textContent='🔊';curBtn=null}$('#pa').textContent='▶ เล่นต่อเนื่อง'}
+document.querySelectorAll('#tts .spk').forEach(b=>b.onclick=async()=>{if(curBtn===b){stopAll();return}stopAll();const t=flat[b.closest('.line').dataset.n-1];curBtn=b;b.classList.add('on');b.textContent='■';const my=token;await speak(t.en,PITCH[t.who]||1);if(my===token&&curBtn===b){b.classList.remove('on');b.textContent='🔊';curBtn=null}});
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+$('#pa').onclick=async()=>{if($('#pa').textContent.startsWith('■')){stopAll();return}stopAll();const my=token;$('#pa').textContent='■ หยุด';const els=[...document.querySelectorAll('#tts .line')];
+for(let i=0;i<flat.length;i++){if(my!==token)return;const t=flat[i],el=els[i];el.classList.add('now');el.scrollIntoView({block:'center',behavior:'smooth'});
+const mine=me&&(t.who===me||t.who==='Everyone');
+if(mine){const w=t.en.split(/\s+/).length;await sleep(Math.max(2500,w*520/parseFloat($('#rate').value)))}else await speak(t.en,PITCH[t.who]||1);
+if(my!==token)return;el.classList.remove('now');await sleep(350)}
+if(my===token)stopAll()};
+let left=420,iv=null;const fmt=()=>{$('#tm').textContent=String(Math.floor(left/60)).padStart(2,'0')+':'+String(left%60).padStart(2,'0')};
+$('#tb').onclick=()=>{if(iv){clearInterval(iv);iv=null;left=420;fmt();$('#tb').textContent='เริ่มจับเวลา';return}$('#tb').textContent='รีเซ็ต';iv=setInterval(()=>{left--;fmt();if(left<=0){clearInterval(iv);iv=null;$('#tb').textContent='เริ่มใหม่';left=420;fmt()}},1000)};
+</script></body></html>
